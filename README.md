@@ -12,8 +12,8 @@ Once you have this running somewhere update your config at `app/data/config.php`
 
 ```
     // Label printer settings
-    Setting('LABEL_PRINTER_WEBHOOK', 'http://127.0.0.1:8000');
-    Setting('LABEL_PRINTER_RUN_SERVER', true); 
+    Setting('LABEL_PRINTER_WEBHOOK', 'http://127.0.0.1:8000/print');
+    Setting('LABEL_PRINTER_RUN_SERVER', true);
     Setting('LABEL_PRINTER_PARAMS', []);
     Setting('LABEL_PRINTER_HOOK_JSON', false);
 
@@ -37,6 +37,25 @@ The label size and printer are configured via environmental variables. You can a
 | DUE_DATE_FONT_SIZE | 30 | The size of that font |
 
 Included fonts are `NotoSans-Regular.ttf` and `NotoSerif-Regular.ttf`
+
+## Endpoints
+
+Two endpoints are available `/print` and `/image` both accept the same parameters. `/image` will return the rendered image as a PNG instead of sending to the printer.
+
+### Parameters
+
+POST or GET accepted.
+
+| Name      | Use                                 |
+| --------- | ------------------------------------|
+| product   | name                                |
+| battery   | name                                |
+| chore     | name                                |
+| recipe    | name                                |
+| grocycode | the barcode                         |
+| due_date  | the text at the bottom of the label |
+
+The name will use whichever parameter is given.
 
 ## Running
 
