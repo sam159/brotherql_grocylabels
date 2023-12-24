@@ -6,10 +6,20 @@ This project is intended to be a webhook target for [Grocy](https://github.com/g
 
 Only die-cut labels are supported as I don't have any endless rolls to test with.
 
-## TODO
+## Connecting Grocy
 
-- Endless Labels
-- Some more formatting options
+Once you have this running somewhere update your config at `app/data/config.php` to match the following. Presuming that you have this running on localhost at port 8000.
+
+```
+    // Label printer settings
+    Setting('LABEL_PRINTER_WEBHOOK', 'http://127.0.0.1:8000');
+    Setting('LABEL_PRINTER_RUN_SERVER', true); 
+    Setting('LABEL_PRINTER_PARAMS', []);
+    Setting('LABEL_PRINTER_HOOK_JSON', false);
+
+    Setting('FEATURE_FLAG_LABEL_PRINTER', true);
+
+```
 
 ## Environment Variables
 
@@ -42,6 +52,11 @@ Its advisable to run and install in a venv. For example:
     python -m venv .venv
     source ./.venv/bin/activate
 ```
+
+## TODO
+
+- Endless Labels
+- Some more formatting options
 
 ### Docker
 
