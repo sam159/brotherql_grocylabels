@@ -62,7 +62,7 @@ Its advisable to run and install in a venv. For example:
 
 A Dockerfile is included based on a python 3.10 alpine image. The default port is 8000.
 
-TODO: publish somewhere
+Published to Dockerhub as [sam159/brotherql_grocylabels](https://hub.docker.com/r/sam159/brotherql_grocylabels)
 
 ## Contributing
 
