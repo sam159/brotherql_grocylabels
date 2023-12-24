@@ -64,6 +64,8 @@ A Dockerfile is included based on a python 3.10 alpine image. The default port i
 
 Published to Dockerhub as [sam159/brotherql_grocylabels](https://hub.docker.com/r/sam159/brotherql_grocylabels)
 
+As an example, you can launch this with `docker run -d -p 8000:8000 -e PRINTER_MODEL="QL-500" -e PRINTER_PATH="file:///dev/usb/lp1" sam159/brotherql_grocylabels:latest`
+
 ## Contributing
 
 I'll try to keep on top of bugs but feature requests may go unfulfilled. Please use the issue tracking in Github.
