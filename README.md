@@ -16,7 +16,7 @@ Only die-cut labels are supported as I don't have any endless rolls to test with
 The label size and printer are configured via environmental variables. You can also create a `.env` file instead.
 
 | Variable | Default | Description |
-| -------- | Default | ----------- |
+| -------- | ------- | ----------- |
 | LABEL_SIZE | 62x29 | See the [brother_ql](https://github.com/pklaus/brother_ql) readme for the names of the labels |
 | PRINTER_MODEL | QL-500 | The printer model, ie `QL-500`. One of the values accepted by brother_ql |
 | PRINTER_PATH | file:///dev/usb/lp1 | Where the printer is found on the system. For network printers use `tcp://printer.address` |
