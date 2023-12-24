@@ -81,7 +81,9 @@ Its advisable to run and install in a venv. For example:
 
 A Dockerfile is included based on a python 3.10 alpine image. The default port is 8000.
 
-TODO: publish somewhere
+Published to Dockerhub as [sam159/brotherql_grocylabels](https://hub.docker.com/r/sam159/brotherql_grocylabels)
+
+As an example, you can launch this with `docker run -d -p 8000:8000 -e PRINTER_MODEL="QL-500" -e PRINTER_PATH="file:///dev/usb/lp1" sam159/brotherql_grocylabels:latest`
 
 ## Contributing
 
