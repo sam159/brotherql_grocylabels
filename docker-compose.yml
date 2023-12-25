@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  printer:
+    image: sam159/brotherql_grocylabels:latest
+    restart: unless-stopped
+    environment:
+      - PRINTER_MODEL=QL-500
+      - PRINTER_PATH=file:///dev/usb/lp1
+    ports:
+      - 8000:8000
