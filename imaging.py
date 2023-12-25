@@ -2,11 +2,17 @@ from pylibdmtx.pylibdmtx import encode
 from PIL import Image, ImageColor, ImageFont, ImageDraw
 
 def createBarcode(text: str):
-    encoded = encode(text.encode('utf8'), "Ascii", "32x32")
+    encoded = encode(text.encode('utf8'), "Ascii", "ShapeAuto")
     barcode = Image.frombytes('RGB', (encoded.width, encoded.height), encoded.pixels)
     return barcode
 
 def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMaxLines : int, barcode : Image, dueDate : str, dueDateFont : ImageFont):
+    # increase the size of the barcode if space permits
+    if (barcode.size[1] * 4) < labelSize[1]:
+        barcode = barcode.resize((barcode.size[0] * 4, barcode.size[1] * 4), Image.Resampling.NEAREST)
+    if (barcode.size[1] * 2) < labelSize[1]:
+        barcode = barcode.resize((barcode.size[0] * 2, barcode.size[1] * 2), Image.Resampling.NEAREST)
+    
     label = Image.new("RGB", labelSize, ImageColor.getrgb("#FFF"))
     barcode_padding = [0, (int)((label.size[1] / 2) - (barcode.size[1] / 2))]
     label.paste(barcode, barcode_padding)
