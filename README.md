@@ -1,6 +1,6 @@
 # Brother QL Grocy Label Printer Service
 
-![Example Label](example.png)
+<img src="example.png" alt="Example Label" width="348" height="135">
 
 This project is intended to be a webhook target for [Grocy](https://github.com/grocy/grocy) to print labels to a brother QL label printer. Datamatrix barcodes are used instead of QR or linear barcodes, this matches what Grocy uses by default.
 
@@ -65,12 +65,19 @@ This has been tested with python 3.10, newer may work fine.
 
 You will need to install the `libdmtx` library for the barcodes to generate, see [pylibdmtx](https://pypi.org/project/pylibdmtx/) documentation on pypi.
 
-Its advisable to run and install in a venv. For example:
+Its advisable to run and install in a [venv](https://docs.python.org/3/library/venv.html). For example:
 
 ```
+    # Create and enter the venv
     python -m venv .venv
     source ./.venv/bin/activate
+    # Install packages
+    python -m pip install -U -r requirements
+
+    # exit with ./.venv/bin/deactivate
 ```
+
+For development you can use `flask run --debug` to run the service on port 5000. Alternatively use `gunicorn -c gunicorn_conf.py app:app` to run the service on port 8000.
 
 ## TODO
 
@@ -81,9 +88,11 @@ Its advisable to run and install in a venv. For example:
 
 A Dockerfile is included based on a python 3.10 alpine image. The default port is 8000.
 
-Published to Dockerhub as [sam159/brotherql_grocylabels](https://hub.docker.com/r/sam159/brotherql_grocylabels)
+Published to Dockerhub as [sam159/brotherql_grocylabels](https://hub.docker.com/r/sam159/brotherql_grocylabels) for architectures amd64, arm64, and armv7.
 
-As an example, you can launch this with `docker run -d -p 8000:8000 -e PRINTER_MODEL="QL-500" -e PRINTER_PATH="file:///dev/usb/lp1" sam159/brotherql_grocylabels:latest`
+As an example, you can launch this with `docker run -d -p 8000:8000 -e PRINTER_MODEL=QL-500 -e PRINTER_PATH=file:///dev/usb/lp1 sam159/brotherql_grocylabels:latest`.
+
+An example `docker-compose.yml` file can be found [here](docker-compose.yml).
 
 ## Contributing
 
