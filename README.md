@@ -1,6 +1,6 @@
 # Brother QL Grocy Label Printer Service
 
-![Example Label](example.png)
+<img src="example.png" alt="Example Label" width="348" height="135">
 
 This project is intended to be a webhook target for [Grocy](https://github.com/grocy/grocy) to print labels to a brother QL label printer. Datamatrix barcodes are used instead of QR or linear barcodes, this matches what Grocy uses by default.
 
