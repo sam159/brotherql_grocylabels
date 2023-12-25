@@ -18,17 +18,25 @@ def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMa
     label.paste(barcode, barcode_padding)
     
     draw = ImageDraw.Draw(label)
+
+    (nameText, nameTextWidth) = wrapText(text, textFont, label.size[0] - barcode.size[0], textMaxLines)
+    nameMaxWidth = label.size[0] - barcode.size[0]
+    nameLeftMargin = (nameMaxWidth - nameTextWidth) / 2
+
+    print((nameTextWidth, nameMaxWidth, nameLeftMargin))
+
     draw.multiline_text(
-        [barcode.size[1], 0],
-        wrapText(text, textFont, label.size[0] - barcode.size[0], textMaxLines),
+        [barcode.size[0] + nameLeftMargin, 0],
+        nameText,
         fill = ImageColor.getrgb("#000"),
-        font = textFont
+        font = textFont,
+        align = "center"
     )
 
     if dueDate:
-        (_, _, _, ddbottom) = dueDateFont.getbbox(dueDate)
+        (_, _, ddRight, ddBottom) = dueDateFont.getbbox(dueDate)
         draw.text(
-            [barcode.size[1], label.size[1] - ddbottom],
+            [label.size[0] - ddRight, label.size[1] - ddBottom],
             dueDate,
             fill = ImageColor.getrgb("#000"),
             font = dueDateFont
@@ -40,6 +48,7 @@ def wrapText(text : str, font : ImageFont, maxWidth : int, maxLines : int):
     parts = text.split(" ")
     parts.reverse()
     lines = []
+    longestLine = 0
 
     # break words that are too long for a single line
     trimmedParts = []
@@ -71,10 +80,13 @@ def wrapText(text : str, font : ImageFont, maxWidth : int, maxLines : int):
         
         # finished with the line
         if len(nextLine) > 0:
-            lines.append(' '.join(nextLine));
+            lines.append(' '.join(nextLine))
+            lineLength = font.getlength(' '.join(nextLine))
+            if lineLength > longestLine:
+                longestLine = lineLength
     
     if len(lines) > maxLines:
         lines = lines[0:maxLines]
         lines[-1] += '...'
 
-    return '\n'.join(lines)
+    return ('\n'.join(lines), longestLine)
