@@ -6,13 +6,14 @@ from dotenv import load_dotenv
 from brother_ql.labels import ALL_LABELS
 from brother_ql import BrotherQLRaster, create_label
 from brother_ql.backends import guess_backend, backend_factory
-from imaging import createBarcode, createLabelImage
+from app.imaging import createBarcode, createLabelImage
 
 load_dotenv()
 
 LABEL_SIZE = getenv("LABEL_SIZE", "62x29")
 PRINTER_MODEL = getenv("PRINTER_MODEL", "QL-500")
 PRINTER_PATH = getenv("PRINTER_PATH", "file:///dev/usb/lp1")
+BARCODE_FORMAT = getenv("BARCODE_FORMAT", "Datamatrix")
 NAME_FONT = getenv("NAME_FONT", "NotoSerif-Regular.ttf")
 NAME_FONT_SIZE = int(getenv("NAME_FONT_SIZE", "48"))
 NAME_MAX_LINES = int(getenv("NAME_MAX_LINES", "4"))
@@ -25,8 +26,8 @@ BACKEND_CLASS = backend_factory(selected_backend)['backend_class']
 label_spec = next(x for x in ALL_LABELS if x.identifier == LABEL_SIZE)
 
 thisDir = path.dirname(path.abspath(__file__))
-nameFont = ImageFont.truetype(path.join(thisDir, "fonts", NAME_FONT), NAME_FONT_SIZE)
-ddFont = ImageFont.truetype(path.join(thisDir, "fonts", DUE_DATE_FONT), DUE_DATE_FONT_SIZE)
+nameFont = ImageFont.truetype(path.join(thisDir, "..", "fonts", NAME_FONT), NAME_FONT_SIZE)
+ddFont = ImageFont.truetype(path.join(thisDir, "..", "fonts", DUE_DATE_FONT), DUE_DATE_FONT_SIZE)
 
 app = Flask(__name__)
 
@@ -56,7 +57,7 @@ def get_params():
 def print_route():
     (name, barcode, dueDate) = get_params();
 
-    label = createLabelImage(label_spec.dots_printable, name, nameFont, NAME_MAX_LINES, createBarcode(barcode), dueDate, ddFont)
+    label = createLabelImage(label_spec.dots_printable, name, nameFont, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
 
     buf = BytesIO()
     label.save(buf, format="PNG")
@@ -69,7 +70,7 @@ def print_route():
 def test():
     (name, barcode, dueDate) = get_params();
 
-    img = createLabelImage(label_spec.dots_printable, name, nameFont, NAME_MAX_LINES, createBarcode(barcode), dueDate, ddFont)
+    img = createLabelImage(label_spec.dots_printable, name, nameFont, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
     buf = BytesIO()
     img.save(buf, format="PNG")
     buf.seek(0)
