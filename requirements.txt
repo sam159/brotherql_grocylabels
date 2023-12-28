@@ -4,3 +4,4 @@ Pillow == 10.*
 pylibdmtx == 0.1.*
 python-dotenv == 1.*
 gunicorn
+qrcode[pil] == 7.4.*
