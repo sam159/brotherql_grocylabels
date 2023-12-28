@@ -20,7 +20,6 @@ def createBarcode(text: str, type: str):
             return createDatamatrix(text)
 
 def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMaxLines : int, barcode : Image, dueDate : str, dueDateFont : ImageFont):
-    print({barcode.size, labelSize})
     # increase the size of the barcode if space permits
     if (barcode.size[1] * 4) < labelSize[1]:
         barcode = barcode.resize((barcode.size[0] * 4, barcode.size[1] * 4), Image.Resampling.NEAREST)
