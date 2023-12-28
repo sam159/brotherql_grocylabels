@@ -1,12 +1,26 @@
 from pylibdmtx.pylibdmtx import encode
+import qrcode
 from PIL import Image, ImageColor, ImageFont, ImageDraw
 
-def createBarcode(text: str):
+def createDatamatrix(text: str):
     encoded = encode(text.encode('utf8'), "Ascii", "ShapeAuto")
     barcode = Image.frombytes('RGB', (encoded.width, encoded.height), encoded.pixels)
     return barcode
 
+def createQRCode(text: str):
+    return qrcode.make(text, box_size = 1)
+
+def createBarcode(text: str, type: str):
+    match type:
+        case "QRCode":
+            return createQRCode(text)
+        case "DataMatrix":
+            return createDatamatrix(text)
+        case _:
+            return createDatamatrix(text)
+
 def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMaxLines : int, barcode : Image, dueDate : str, dueDateFont : ImageFont):
+    print({barcode.size, labelSize})
     # increase the size of the barcode if space permits
     if (barcode.size[1] * 4) < labelSize[1]:
         barcode = barcode.resize((barcode.size[0] * 4, barcode.size[1] * 4), Image.Resampling.NEAREST)
@@ -14,6 +28,7 @@ def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMa
         barcode = barcode.resize((barcode.size[0] * 2, barcode.size[1] * 2), Image.Resampling.NEAREST)
     
     label = Image.new("RGB", labelSize, ImageColor.getrgb("#FFF"))
+    # vertically align barcode
     barcode_padding = [0, (int)((label.size[1] / 2) - (barcode.size[1] / 2))]
     label.paste(barcode, barcode_padding)
     
@@ -22,8 +37,6 @@ def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMa
     (nameText, nameTextWidth) = wrapText(text, textFont, label.size[0] - barcode.size[0], textMaxLines)
     nameMaxWidth = label.size[0] - barcode.size[0]
     nameLeftMargin = (nameMaxWidth - nameTextWidth) / 2
-
-    print((nameTextWidth, nameMaxWidth, nameLeftMargin))
 
     draw.multiline_text(
         [barcode.size[0] + nameLeftMargin, 0],

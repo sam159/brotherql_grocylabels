@@ -2,7 +2,10 @@
 
 <img src="example.png" alt="Example Label" width="348" height="135">
 
-This project is intended to be a webhook target for [Grocy](https://github.com/grocy/grocy) to print labels to a brother QL label printer. Datamatrix barcodes are used instead of QR or linear barcodes, this matches what Grocy uses by default.
+This project is intended to be a webhook target for [Grocy](https://github.com/grocy/grocy) to print labels to a brother QL label printer. 
+
+Datamatrix or QR codes can be used with Datamatrix being the default. Datamatrix will fit better in smaller labels but I've found aren't as easily read by the Grocy 
+barcode reader or by the [Android App](https://github.com/patzly/grocy-android).
 
 Only die-cut labels are supported as I don't have any endless rolls to test with.
 
@@ -18,23 +21,23 @@ Once you have this running somewhere update your config at `app/data/config.php`
     Setting('LABEL_PRINTER_HOOK_JSON', false);
 
     Setting('FEATURE_FLAG_LABEL_PRINTER', true);
-
 ```
 
 ## Environment Variables
 
 The label size and printer are configured via environmental variables. You can also create a `.env` file instead.
 
-| Variable | Default | Description |
-| -------- | ------- | ----------- |
-| LABEL_SIZE | 62x29 | See the [brother_ql](https://github.com/pklaus/brother_ql) readme for the names of the labels |
-| PRINTER_MODEL | QL-500 | The printer model, ie `QL-500`. One of the values accepted by brother_ql |
-| PRINTER_PATH | file:///dev/usb/lp1 | Where the printer is found on the system. For network printers use `tcp://printer.address` |
-| NAME_FONT | NotoSerif-Regular.ttf | The file name of the font in the fonts directory |
-| NAME_FONT_SIZE | 48 | The size of that font |
-| NAME_MAX_LINES | 4 | The maximum number of lines to use for the name |
-| DUE_DATE_FONT | NotoSerif-Regular.ttf | NotoSerif-Regular.ttf | The file name of the font in the fonts directory |
-| DUE_DATE_FONT_SIZE | 30 | The size of that font |
+| Variable           | Default               | Description                                                                                   |
+| ------------------ | --------------------- | --------------------------------------------------------------------------------------------- |
+| LABEL_SIZE         | 62x29                 | See the [brother_ql](https://github.com/pklaus/brother_ql) readme for the names of the labels |
+| PRINTER_MODEL      | QL-500                | The printer model. One of the values accepted by brother_ql                                   |
+| PRINTER_PATH       | file:///dev/usb/lp1   | Where the printer is found on the system. For network printers use `tcp://printer.address`    |
+| BARCODE_FORMAT     | Datamatrix            | `Datamatrix` or `QRCode`                                                                      |
+| NAME_FONT          | NotoSerif-Regular.ttf | The file name of the font in the fonts directory                                              |
+| NAME_FONT_SIZE     | 48                    | The size of that font                                                                         |
+| NAME_MAX_LINES     | 4                     | The maximum number of lines to use for the name                                               |
+| DUE_DATE_FONT      | NotoSerif-Regular.ttf | The file name of the font in the fonts directory                                              |
+| DUE_DATE_FONT_SIZE | 30                    | The size of that font                                                                         |
 
 Included fonts are `NotoSans-Regular.ttf` and `NotoSerif-Regular.ttf`
 
