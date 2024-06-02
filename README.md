@@ -38,6 +38,7 @@ The label size and printer are configured via environmental variables. You can a
 | NAME_MAX_LINES     | 4                     | The maximum number of lines to use for the name                                               |
 | DUE_DATE_FONT      | NotoSerif-Regular.ttf | The file name of the font in the fonts directory                                              |
 | DUE_DATE_FONT_SIZE | 30                    | The size of that font                                                                         |
+| ENDLESS_MARGIN     | 10                    | The top & bottom margin to add when using endless labels                                      |
 
 Included fonts are `NotoSans-Regular.ttf` and `NotoSerif-Regular.ttf`
 
@@ -75,7 +76,7 @@ Its advisable to run and install in a [venv](https://docs.python.org/3/library/v
     python -m venv .venv
     source ./.venv/bin/activate
     # Install packages
-    python -m pip install -U -r requirements
+    python -m pip install -U -r requirements.txt
 
     # exit with ./.venv/bin/deactivate
 ```
@@ -84,7 +85,6 @@ For development you can use `flask run --debug` to run the service on port 5000.
 
 ## TODO
 
-- Endless Labels
 - Some more formatting options
 
 ### Docker
@@ -101,4 +101,4 @@ An example `docker-compose.yml` file can be found [here](docker-compose.yml).
 
 I'll try to keep on top of bugs but feature requests may go unfulfilled. Please use the issue tracking in Github.
 
-PRs welcome!
+PRs are welcome!

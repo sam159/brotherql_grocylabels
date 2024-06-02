@@ -19,36 +19,62 @@ def createBarcode(text: str, type: str):
         case _:
             return createDatamatrix(text)
 
-def createLabelImage(labelSize : tuple, text : str, textFont : ImageFont, textMaxLines : int, barcode : Image, dueDate : str, dueDateFont : ImageFont):
+def createLabelImage(labelSize : tuple, endlessMargin : int, text : str, textFont : ImageFont, textFontSize : int, textMaxLines : int, barcode : Image, dueDate : str, dueDateFont : ImageFont):
+    (width, height) = labelSize
+    # default line spacing used by multiline_text, doesn't seem to have an effect if changed though but we need to take into account
+    lineSpacing = 4
+    # margin to use for label
+    marginTop = 0
+    marginBottom = 0
+
+    # for endless labels with a height of zero
+    if height == 0:
+        # height should be text size + spacing x max lines + margin x 2
+        height = (textFontSize + lineSpacing) * textMaxLines + endlessMargin * 2
+        # negate the empty space above the text
+        (_, tTop, _, _) = textFont.getbbox("testing")
+        marginTop = endlessMargin - tTop
+        # regular bottom margin
+        marginBottom = endlessMargin
+        # make space for the due date
+        if dueDate:
+            (_, _, _, ddBottom) = dueDateFont.getbbox(dueDate)
+            height += ddBottom
+
     # increase the size of the barcode if space permits
-    if (barcode.size[1] * 4) < labelSize[1]:
+    if (barcode.size[1] * 8) < height:
+        barcode = barcode.resize((barcode.size[0] * 8, barcode.size[1] * 8), Image.Resampling.NEAREST)
+    if (barcode.size[1] * 6) < height:
+        barcode = barcode.resize((barcode.size[0] * 6, barcode.size[1] * 6), Image.Resampling.NEAREST)
+    if (barcode.size[1] * 4) < height:
         barcode = barcode.resize((barcode.size[0] * 4, barcode.size[1] * 4), Image.Resampling.NEAREST)
-    if (barcode.size[1] * 2) < labelSize[1]:
+    if (barcode.size[1] * 2) < height:
         barcode = barcode.resize((barcode.size[0] * 2, barcode.size[1] * 2), Image.Resampling.NEAREST)
     
-    label = Image.new("RGB", labelSize, ImageColor.getrgb("#FFF"))
-    # vertically align barcode
+    label = Image.new("RGB", (width, height), ImageColor.getrgb("#FFF"))
+    # vertically align barcode (ignoring margin)
     barcode_padding = [0, (int)((label.size[1] / 2) - (barcode.size[1] / 2))]
     label.paste(barcode, barcode_padding)
     
     draw = ImageDraw.Draw(label)
 
-    (nameText, nameTextWidth) = wrapText(text, textFont, label.size[0] - barcode.size[0], textMaxLines)
-    nameMaxWidth = label.size[0] - barcode.size[0]
+    (nameText, nameTextWidth) = wrapText(text, textFont, width - barcode.size[0], textMaxLines)
+    nameMaxWidth = width - barcode.size[0]
     nameLeftMargin = (nameMaxWidth - nameTextWidth) / 2
 
     draw.multiline_text(
-        [barcode.size[0] + nameLeftMargin, 0],
+        [barcode.size[0] + nameLeftMargin, marginTop],
         nameText,
         fill = ImageColor.getrgb("#000"),
         font = textFont,
-        align = "center"
+        align = "center",
+        spacing = lineSpacing
     )
 
     if dueDate:
         (_, _, ddRight, ddBottom) = dueDateFont.getbbox(dueDate)
         draw.text(
-            [label.size[0] - ddRight, label.size[1] - ddBottom],
+            [label.size[0] - ddRight, label.size[1] - ddBottom - marginBottom],
             dueDate,
             fill = ImageColor.getrgb("#000"),
             font = dueDateFont
@@ -100,5 +126,8 @@ def wrapText(text : str, font : ImageFont, maxWidth : int, maxLines : int):
     if len(lines) > maxLines:
         lines = lines[0:maxLines]
         lines[-1] += '...'
+        lineLength = font.getlength(lines[-1])
+        if lineLength > longestLine:
+            longestLine = lineLength
 
     return ('\n'.join(lines), longestLine)
