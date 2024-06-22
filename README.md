@@ -42,6 +42,11 @@ The label size and printer are configured via environmental variables. You can a
 
 Included fonts are `NotoSans-Regular.ttf` and `NotoSerif-Regular.ttf`
 
+## Endless Labels
+
+These are supported, for example the `62` label size. The length of the label will be big enough to accommodate the max number of lines including a margin.
+You may want to experiment with font sizes and line count to get the most out of it.
+
 ## Endpoints
 
 Two endpoints are available `/print` and `/image` both accept the same parameters. `/image` will return the rendered image as a PNG instead of sending to the printer.
