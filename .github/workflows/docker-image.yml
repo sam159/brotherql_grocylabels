@@ -2,7 +2,7 @@ name: Dockerhub Publish
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "feature/*" ]
     tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
@@ -27,6 +27,7 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
           type=sha
+          type=raw,value=latest,enable={{is_default_branch}}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
