@@ -19,6 +19,7 @@ NAME_FONT_SIZE = int(getenv("NAME_FONT_SIZE", "48"))
 NAME_MAX_LINES = int(getenv("NAME_MAX_LINES", "4"))
 DUE_DATE_FONT =  getenv("NAME_FONT", "NotoSerif-Regular.ttf")
 DUE_DATE_FONT_SIZE = int(getenv("DUE_DATE_FONT_SIZE", "30"))
+ENDLESS_MARGIN = int(getenv("ENDLESS_MARGIN", "10"))
 
 selected_backend = guess_backend(PRINTER_PATH)
 BACKEND_CLASS = backend_factory(selected_backend)['backend_class']
@@ -33,7 +34,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home_route():
-    return "Label %s, Size %ix%i"%(label_spec.identifier, label_spec.dots_printable[0], label_spec.dots_printable[1])
+    return "Label %s, %s"%(label_spec.identifier, label_spec.name)
 
 def get_params():
     source = request.form if request.method == "POST" else request.args
@@ -57,7 +58,7 @@ def get_params():
 def print_route():
     (name, barcode, dueDate) = get_params();
 
-    label = createLabelImage(label_spec.dots_printable, name, nameFont, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
+    label = createLabelImage(label_spec.dots_printable, ENDLESS_MARGIN, name, nameFont, NAME_FONT_SIZE, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
 
     buf = BytesIO()
     label.save(buf, format="PNG")
@@ -70,7 +71,7 @@ def print_route():
 def test():
     (name, barcode, dueDate) = get_params();
 
-    img = createLabelImage(label_spec.dots_printable, name, nameFont, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
+    img = createLabelImage(label_spec.dots_printable, ENDLESS_MARGIN, name, nameFont, NAME_FONT_SIZE, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
     buf = BytesIO()
     img.save(buf, format="PNG")
     buf.seek(0)
@@ -89,4 +90,3 @@ def sendToPrinter(image : Image):
     be = BACKEND_CLASS(PRINTER_PATH)
     be.write(bql.data)
     del be
-

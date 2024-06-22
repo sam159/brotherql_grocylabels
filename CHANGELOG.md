@@ -1,3 +1,7 @@
+# 0.4.0
+
+- Added support for printing endless labels
+
 # 0.3.0
 
 - Added support for using QR codes instead of Datamatrix
