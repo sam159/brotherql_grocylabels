@@ -1,3 +1,7 @@
+# 0.4.1
+
+- publish main branch as latest docker image
+
 # 0.4.0
 
 - Added support for printing endless labels
