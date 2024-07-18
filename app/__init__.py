@@ -3,7 +3,7 @@ from os import path, getenv
 from flask import Flask, Response, request
 from PIL import Image, ImageFont
 from dotenv import load_dotenv
-from brother_ql.labels import ALL_LABELS
+from brother_ql.labels import ALL_LABELS, Color
 from brother_ql import BrotherQLRaster, create_label
 from brother_ql.backends import guess_backend, backend_factory
 from app.imaging import createBarcode, createLabelImage
@@ -81,10 +81,13 @@ def test():
 def sendToPrinter(image : Image):
     bql = BrotherQLRaster(PRINTER_MODEL)
 
+    redLabel = label_spec.color == Color.BLACK_RED_WHITE
+
     create_label(
         bql,
         image,
-        LABEL_SIZE
+        LABEL_SIZE,
+        red=redLabel
     )
 
     be = BACKEND_CLASS(PRINTER_PATH)
