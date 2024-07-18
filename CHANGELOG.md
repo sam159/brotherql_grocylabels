@@ -1,3 +1,7 @@
+# 0.4.2
+
+- add support for `62red` labels (and other red labels)
+
 # 0.4.1
 
 - publish main branch as latest docker image
