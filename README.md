@@ -70,7 +70,7 @@ The name will use whichever parameter is given.
 
 **Note:** Theres no security on this web service, so don't make it publicly available.
 
-This has been tested with python 3.10, newer may work fine.
+This has been tested with python 3.15, python 3.11 or newer is required.
 
 You will need to install the `libdmtx` library for the barcodes to generate, see [pylibdmtx](https://pypi.org/project/pylibdmtx/) documentation on pypi.
 
@@ -94,7 +94,7 @@ For development you can use `flask run --debug` to run the service on port 5000.
 
 ### Docker
 
-A Dockerfile is included based on a python 3.10 alpine image. The default port is 8000.
+A Dockerfile is included based on a python 3.15 alpine image. The default port is 8000.
 
 Published to Dockerhub as [sam159/brotherql_grocylabels](https://hub.docker.com/r/sam159/brotherql_grocylabels) for architectures amd64, arm64, and armv7.
 

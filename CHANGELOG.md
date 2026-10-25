@@ -1,3 +1,8 @@
+# 0.5.0
+
+- Updated python dependencies (Flask 3.1, Pillow 13, qrcode 8, gunicorn 26)
+- Updated the docker base image to python 3.15-alpine, python 3.11 or newer is now required
+
 # 0.4.2
 
 - add support for `62red` labels (and other red labels)

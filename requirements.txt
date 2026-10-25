@@ -1,7 +1,9 @@
-Flask >= 3.0, <= 3.1
-brother_ql >= 0.9, <= 1.0
-Pillow == 10.*
+# setuptools provides distutils for pylibdmtx, removed from the stdlib in python 3.12
+setuptools >= 75, < 85
+Flask >= 3.1, < 4
+brother_ql >= 0.9, < 1
+Pillow >= 13, < 14
 pylibdmtx == 0.1.*
-python-dotenv == 1.*
-gunicorn
-qrcode[pil] == 7.4.*
+python-dotenv >= 1.2, < 2
+gunicorn >= 26, < 27
+qrcode[pil] >= 8, < 9

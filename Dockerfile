@@ -1,4 +1,4 @@
-FROM python:3.10-alpine as builder
+FROM python:3.15-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY requirements.txt .
 
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-FROM python:3.10-alpine
+FROM python:3.15-alpine
 
 # gcc needed because pythons find_libary doesn't work without it https://bugs.python.org/issue21622
 RUN apk add gcc fontconfig jpeg lcms2 zlib freetype tcl tk harfbuzz \
