@@ -86,9 +86,9 @@ Its advisable to run and install in a [venv](https://docs.python.org/3/library/v
     # exit with ./.venv/bin/deactivate
 ```
 
-For development you can use `flask run --debug` to run the service on port 5000. Alternatively use `gunicorn -c gunicorn_conf.py app:app` to run the service on port 8000.
+For development, you can use `flask run --debug` to run the service on port 5000. Alternatively use `gunicorn -c gunicorn_conf.py app:app` to run the service on port 8000.
 
-Print requests are inserted into an in-memory queue and serviced by a background thread. Webhook responses are sent after a request is inserted into the queue, not necessarily when the label has been sent to the printer. If the process is quit with print requests still in the queue, they will be dropped.
+Print requests are inserted into an in-memory queue (max 50 pending labels) and serviced by a background thread. Webhook responses are sent after a request is inserted into the queue, not necessarily when the label has been sent to the printer. Requests are rejected with HTTP 503 when the queue is full. A failed print is retried up to 3 times with increasing delays (2s, 4s, 8s) before the label is dropped; failures are logged and do not stop the background thread. If the process is quit with print requests still in the queue, they will be dropped (the process waits up to 10 seconds for pending prints to finish).
 
 ## TODO
 

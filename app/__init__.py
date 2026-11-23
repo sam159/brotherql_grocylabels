@@ -1,7 +1,7 @@
 from io import BytesIO
 from os import path, getenv
-from threading import Thread
-from queue import Queue
+from threading import Thread, Event
+from queue import Queue, Full
 import atexit
 import logging
 from flask import Flask, Response, request
@@ -37,7 +37,39 @@ ddFont = ImageFont.truetype(path.join(thisDir, "..", "fonts", DUE_DATE_FONT), DU
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
-print_queue = Queue()
+PRINT_QUEUE_MAX_SIZE = 50
+PRINT_MAX_RETRIES = 3
+PRINT_RETRY_DELAY = 2
+PRINT_SHUTDOWN_TIMEOUT = 10
+
+print_queue = Queue(PRINT_QUEUE_MAX_SIZE)
+shutdown_event = Event()
+
+
+def _print_with_retry(label):
+    """Print a label, retrying up to PRINT_MAX_RETRIES times with increasing delay."""
+    delay = PRINT_RETRY_DELAY
+    for attempt in range(1, PRINT_MAX_RETRIES + 2):
+        try:
+            sendToPrinter(label)
+            return
+        except Exception:
+            if attempt > PRINT_MAX_RETRIES:
+                app.logger.exception("failed to print label after %s attempts, dropping it", attempt)
+                return
+
+            if shutdown_event.is_set():
+                app.logger.warning("shutdown in progress, not retrying failed print")
+                return
+
+            app.logger.exception(
+                "print attempt %s of %s failed, retrying in %ss",
+                attempt, PRINT_MAX_RETRIES + 1, delay
+            )
+            if shutdown_event.wait(delay):
+                app.logger.warning("shutdown in progress, abandoning print retries")
+                return
+            delay *= 2
 
 
 def _print_queue_handler():
@@ -47,14 +79,14 @@ def _print_queue_handler():
 
         cmd = print_item[0]
         if cmd == 'quit':
+            shutdown_event.set()
             app.logger.info("print thread exiting")
             break
         elif cmd == 'print':
             app.logger.info("handling print request")
-            label = print_item[1]
-            sendToPrinter(label)
+            _print_with_retry(print_item[1])
         else:
-            app.logger.error(f"unknown command {print_item[0]}")
+            app.logger.error(f"unknown command {cmd}")
 
 
 print_thread = Thread(target=_print_queue_handler, group=None, daemon=True)
@@ -62,8 +94,17 @@ print_thread.start()
 
 
 def _exit_handler():
-    print_queue.put(('quit',))
-    print_thread.join()
+    shutdown_event.set()
+
+    try:
+        print_queue.put(('quit',), block=False)
+    except Full:
+        app.logger.warning("print queue full on exit, dropping pending print requests")
+        return
+
+    print_thread.join(timeout=PRINT_SHUTDOWN_TIMEOUT)
+    if print_thread.is_alive():
+        app.logger.warning("print thread did not exit within %ss, dropping pending print requests", PRINT_SHUTDOWN_TIMEOUT)
 
 
 atexit.register(_exit_handler)
@@ -93,20 +134,21 @@ def get_params():
 
 @app.route("/print", methods=["GET", "POST"])
 def print_route():
-    (name, barcode, dueDate) = get_params();
+    (name, barcode, dueDate) = get_params()
 
     label = createLabelImage(label_spec.dots_printable, ENDLESS_MARGIN, name, nameFont, NAME_FONT_SIZE, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
 
-    buf = BytesIO()
-    label.save(buf, format="PNG")
-    buf.seek(0)
-    print_queue.put(('print', label))
+    try:
+        print_queue.put(('print', label), block=False)
+    except Full:
+        app.logger.warning("print queue full, rejecting print request")
+        return Response("print queue full", 503, mimetype="text/plain")
 
-    return Response("OK", 200)
+    return Response("accepted", 200, mimetype="text/plain")
 
 @app.route("/image")
 def test():
-    (name, barcode, dueDate) = get_params();
+    (name, barcode, dueDate) = get_params()
 
     img = createLabelImage(label_spec.dots_printable, ENDLESS_MARGIN, name, nameFont, NAME_FONT_SIZE, NAME_MAX_LINES, createBarcode(barcode, BARCODE_FORMAT), dueDate, ddFont)
     buf = BytesIO()
