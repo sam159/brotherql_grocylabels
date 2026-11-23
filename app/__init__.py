@@ -1,5 +1,9 @@
 from io import BytesIO
 from os import path, getenv
+from threading import Thread
+from queue import Queue
+import atexit
+import logging
 from flask import Flask, Response, request
 from PIL import Image, ImageFont
 from dotenv import load_dotenv
@@ -31,6 +35,39 @@ nameFont = ImageFont.truetype(path.join(thisDir, "..", "fonts", NAME_FONT), NAME
 ddFont = ImageFont.truetype(path.join(thisDir, "..", "fonts", DUE_DATE_FONT), DUE_DATE_FONT_SIZE)
 
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)
+
+print_queue = Queue()
+
+
+def _print_queue_handler():
+    app.logger.info("print thread running")
+    while True:
+        print_item = print_queue.get()
+
+        cmd = print_item[0]
+        if cmd == 'quit':
+            app.logger.info("print thread exiting")
+            break
+        elif cmd == 'print':
+            app.logger.info("handling print request")
+            label = print_item[1]
+            sendToPrinter(label)
+        else:
+            app.logger.error(f"unknown command {print_item[0]}")
+
+
+print_thread = Thread(target=_print_queue_handler, group=None, daemon=True)
+print_thread.start()
+
+
+def _exit_handler():
+    print_queue.put(('quit',))
+    print_thread.join()
+
+
+atexit.register(_exit_handler)
+
 
 @app.route("/")
 def home_route():
@@ -63,7 +100,7 @@ def print_route():
     buf = BytesIO()
     label.save(buf, format="PNG")
     buf.seek(0)
-    sendToPrinter(label)
+    print_queue.put(('print', label))
 
     return Response("OK", 200)
 
