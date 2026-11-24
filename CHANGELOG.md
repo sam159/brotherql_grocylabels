@@ -1,3 +1,7 @@
+# 0.6.0
+
+- Added background thread for printing (thanks soxslayer!)
+
 # 0.5.0
 
 - Updated python dependencies (Flask 3.1, Pillow 13, qrcode 8, gunicorn 26)
